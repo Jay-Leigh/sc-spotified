@@ -1,0 +1,291 @@
+/* ============================================================
+   LAUNCHER BUTTONS (SC bottom bar)
+   ============================================================ */
+#np-toggle-btn,
+#np-mini-toggle-btn {
+  margin-left: 8px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+#np-toggle-btn svg,
+#np-mini-toggle-btn svg { width: 16px; height: 16px; }
+
+/* ============================================================
+   FULLSCREEN OVERLAY
+   ============================================================ */
+#np-overlay {
+  position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
+  z-index: 999999; display: none; opacity: 0;
+  transition: opacity 0.3s ease;
+  color: white; font-family: Interstate, "Lucida Grande", Arial, sans-serif; overflow: hidden;
+}
+#np-overlay.active { display: flex; opacity: 1; }
+
+/* Background blur */
+#np-background {
+  position: absolute; top: -10%; left: -10%; width: 120%; height: 120%;
+  background-size: cover; background-position: center;
+  filter: blur(60px) brightness(0.4); z-index: 1;
+  transition: background-image 0.3s ease;
+}
+
+/* Main content wrapper */
+#np-content {
+  position: relative; z-index: 2; display: flex; flex-direction: column;
+  width: 100%; height: 100%; padding: 40px 50px; box-sizing: border-box;
+}
+
+/* ============================================================
+   IDLE STATE  — opacity-based so queue DOM is preserved
+   ============================================================ */
+#np-topbar, #np-details, #np-controls, #np-queue-host {
+  transition: opacity 0.4s ease;
+}
+
+#np-overlay.idle #np-topbar,
+#np-overlay.idle #np-details,
+#np-overlay.idle #np-controls,
+#np-overlay.idle #np-queue-host {
+  opacity: 0;
+  pointer-events: none;
+}
+
+/* ============================================================
+   TRACK CROSSFADE TRANSITION
+   ============================================================ */
+#np-art, #np-background, #np-details {
+  transition: background-image 0.3s ease, opacity 0.15s ease;
+}
+#np-overlay.np-transitioning #np-art,
+#np-overlay.np-transitioning #np-background,
+#np-overlay.np-transitioning #np-details { opacity: 0; }
+
+/* ============================================================
+   TOP BAR
+   ============================================================ */
+#np-topbar {
+  display: flex; justify-content: flex-end; align-items: center;
+  gap: 10px; margin-bottom: 20px;
+}
+#np-to-mini {
+  opacity: 0.6;
+}
+#np-to-mini:hover { opacity: 1; }
+#np-close {
+  background: rgba(0,0,0,0.3); border: 1px solid rgba(255,255,255,0.2); color: white;
+  font-size: 24px; width: 40px; height: 40px; border-radius: 50%;
+  cursor: pointer; transition: background 0.2s; line-height: 1;
+  display: flex; align-items: center; justify-content: center;
+}
+#np-close:hover { background: rgba(0,0,0,0.6); }
+
+/* ============================================================
+   CENTER: ARTWORK + METADATA
+   ============================================================ */
+#np-center {
+  flex: 1; display: flex; flex-direction: column; align-items: center;
+  justify-content: center; gap: 20px;
+  max-width: 1000px; margin: 0 auto; width: 100%; text-align: center;
+}
+#np-art {
+  width: 350px; height: 350px; border-radius: 8px;
+  box-shadow: 0 20px 50px rgba(0,0,0,0.5);
+  background-size: cover; background-position: center;
+}
+#np-details { display: flex; flex-direction: column; gap: 8px; }
+#np-artist, #np-title { text-decoration: none; color: white; cursor: pointer; }
+#np-artist { font-size: 20px; opacity: 0.7; }
+#np-title  { font-size: 36px; font-weight: bold; line-height: 1.2; }
+#np-artist:hover, #np-title:hover { text-decoration: underline; }
+
+/* ============================================================
+   BOTTOM: WAVEFORM + CONTROLS + QUEUE
+   ============================================================ */
+#np-bottom {
+  display: flex; flex-direction: column; gap: 20px;
+  max-width: 1000px; margin: 0 auto; width: 100%; position: relative;
+}
+
+/* Waveform host */
+#np-waveform-host {
+  width: 100%; height: 140px; position: relative;
+}
+#np-waveform-host .commentPopover,
+#np-waveform-host .commentPlaceholder,
+#np-waveform-host .waveformCommentsNode,
+#np-waveform-host .waveform__empty { display: none !important; }
+
+/* Fallback progress bar (no waveform pages) */
+#np-fallback-bg {
+  width: 100%; height: 8px; background: rgba(255,255,255,0.2);
+  border-radius: 4px; position: relative; overflow: hidden; display: none;
+}
+#np-fallback-fill {
+  height: 100%; background: #ff5500; width: 0%; border-radius: 4px;
+  transition: width 0.5s linear;
+}
+
+/* ============================================================
+   CONTROLS  (equal-size play/pause via fixed container)
+   ============================================================ */
+#np-controls {
+  display: flex; justify-content: center; align-items: center; gap: 30px;
+}
+.np-btn {
+  background: none; border: none; color: white; cursor: pointer; opacity: 0.7;
+  transition: opacity 0.2s, transform 0.1s;
+  display: flex; align-items: center; justify-content: center;
+}
+.np-btn:hover { opacity: 1; transform: scale(1.1); }
+.np-btn svg { width: 24px; height: 24px; fill: currentColor; }
+
+/* Fixed-size play/pause shell so icon swap never shifts layout */
+.np-play-btn {
+  width: 56px; height: 56px;
+  flex-shrink: 0;
+}
+.np-play-btn svg { width: 40px; height: 40px; }
+
+/* Like — orange when active */
+.np-btn.np-liked { color: #ff5500; opacity: 1; }
+.np-btn.np-liked:hover { opacity: 0.8; transform: scale(1.1); }
+
+/* ============================================================
+   QUEUE HOST  (slide + fade reveal, max-height animation)
+   ============================================================ */
+#np-queue-host {
+  max-height: 0; overflow: hidden;
+  opacity: 0; transform: translateY(8px);
+  transition: max-height 0.35s ease, opacity 0.25s ease, transform 0.25s ease;
+}
+#np-overlay.show-queue #np-queue-host {
+  max-height: 250px; overflow-y: auto; opacity: 1; transform: translateY(0);
+}
+
+/* SC queue overrides inside our host */
+#np-queue-host .queue {
+  position: relative !important; top: auto !important; bottom: auto !important;
+  transform: none !important; opacity: 1 !important; visibility: visible !important;
+  height: 100% !important; background: transparent !important; border: none !important;
+}
+#np-queue-host .queue__panel { background: transparent !important; color: white !important; }
+#np-queue-host .queue__title { color: white !important; }
+#np-queue-host .queueItemView__title a,
+#np-queue-host .queueItemView__username { color: white !important; }
+#np-queue-host .queueItemView:hover { background: rgba(255,255,255,0.1) !important; }
+#np-queue-host .queueItemView.m-active { background: rgba(255,85,0,0.2) !important; }
+#np-queue-host::-webkit-scrollbar { width: 8px; }
+#np-queue-host::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.3); border-radius: 4px; }
+
+/* ============================================================
+   MINI PLAYER
+   ============================================================ */
+#np-mini {
+  position: fixed;
+  bottom: 80px; right: 20px;
+  width: 320px; min-width: 260px; max-width: 480px;
+  min-height: 200px;
+  z-index: 999998;
+  border-radius: 12px; overflow: hidden;
+  resize: both;
+  display: none; flex-direction: column;
+  box-shadow: 0 8px 32px rgba(0,0,0,0.65);
+  color: white; font-family: Interstate, "Lucida Grande", Arial, sans-serif;
+  opacity: 0; transition: opacity 0.3s ease;
+}
+#np-mini.active { display: flex; opacity: 1; }
+
+/* Track crossfade on mini too */
+#np-mini.np-transitioning #np-mini-art,
+#np-mini.np-transitioning #np-mini-bg,
+#np-mini.np-transitioning #np-mini-meta { opacity: 0; }
+
+#np-mini-bg {
+  position: absolute; top: -10%; left: -10%; width: 120%; height: 120%;
+  background-size: cover; background-position: center;
+  filter: blur(40px) brightness(0.25); z-index: 0;
+  transition: background-image 0.3s ease, opacity 0.15s ease;
+}
+
+/* Dark gradient overlay for readability */
+#np-mini::after {
+  content: '';
+  position: absolute; inset: 0;
+  background: linear-gradient(to bottom, rgba(0,0,0,0.25) 0%, rgba(0,0,0,0.55) 100%);
+  z-index: 1; pointer-events: none;
+}
+
+#np-mini-inner {
+  position: relative; z-index: 2;
+  display: flex; flex-direction: column;
+  width: 100%; height: 100%;
+  padding: 12px; box-sizing: border-box; gap: 10px;
+}
+
+/* Header row: art + meta + buttons */
+#np-mini-header {
+  display: flex; align-items: center; gap: 10px;
+  cursor: move; user-select: none;
+}
+#np-mini-header button { cursor: pointer; }
+
+#np-mini-art {
+  width: 48px; height: 48px; border-radius: 6px; flex-shrink: 0;
+  background-size: cover; background-position: center;
+  transition: background-image 0.3s ease, opacity 0.15s ease;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.4);
+}
+#np-mini-meta {
+  flex: 1; min-width: 0;
+  transition: opacity 0.15s ease;
+}
+#np-mini-title {
+  font-size: 13px; font-weight: bold;
+  white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+  line-height: 1.3;
+}
+#np-mini-artist {
+  font-size: 11px; opacity: 0.65;
+  white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+  margin-top: 2px;
+}
+
+#np-mini-expand, #np-mini-close {
+  width: 28px; height: 28px; padding: 0;
+  font-size: 16px; flex-shrink: 0;
+  border-radius: 4px;
+}
+#np-mini-close { font-size: 20px; }
+
+/* Mini controls row */
+#np-mini-controls {
+  display: flex; justify-content: center; align-items: center; gap: 16px;
+}
+#np-mini-controls .np-btn svg { width: 20px; height: 20px; }
+#np-mini-controls .np-play-btn { width: 40px; height: 40px; }
+#np-mini-controls .np-play-btn svg { width: 28px; height: 28px; }
+
+/* Mini queue host */
+#np-mini-queue-host {
+  max-height: 0; overflow: hidden;
+  opacity: 0; transform: translateY(6px);
+  transition: max-height 0.35s ease, opacity 0.25s ease, transform 0.25s ease;
+}
+#np-mini.show-queue #np-mini-queue-host {
+  max-height: 200px; overflow-y: auto; opacity: 1; transform: translateY(0);
+}
+
+/* SC queue overrides inside mini host */
+#np-mini-queue-host .queue {
+  position: relative !important; top: auto !important; bottom: auto !important;
+  transform: none !important; opacity: 1 !important; visibility: visible !important;
+  height: 100% !important; background: transparent !important; border: none !important;
+}
+#np-mini-queue-host .queue__panel { background: transparent !important; color: white !important; }
+#np-mini-queue-host .queueItemView__title a,
+#np-mini-queue-host .queueItemView__username { color: white !important; }
+#np-mini-queue-host .queueItemView:hover { background: rgba(255,255,255,0.1) !important; }
+#np-mini-queue-host .queueItemView.m-active { background: rgba(255,85,0,0.2) !important; }
+#np-mini-queue-host::-webkit-scrollbar { width: 6px; }
+#np-mini-queue-host::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.3); border-radius: 3px; }

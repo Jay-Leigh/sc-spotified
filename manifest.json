@@ -1,0 +1,14 @@
+{
+  "manifest_version": 3,
+  "name": "SoundCloud Now Playing",
+  "version": "1.0",
+  "description": "A lightweight, CPU-efficient fullscreen Now Playing experience for SoundCloud.",
+  "content_scripts": [
+    {
+      "matches": ["*://soundcloud.com/*"],
+      "css": ["style.css"], 
+      "js": ["content.js"],
+      "run_at": "document_idle"
+    }
+  ]
+}
