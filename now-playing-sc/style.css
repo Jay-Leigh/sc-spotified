@@ -1,0 +1,123 @@
+/* --- Overlay Launch Button --- */
+#np-toggle-btn {
+  margin-left: 8px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+#np-toggle-btn svg { width: 16px; height: 16px; }
+
+/* --- Fullscreen Overlay --- */
+#np-overlay {
+  position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
+  z-index: 999999; display: none; opacity: 0; transition: opacity 0.3s ease;
+  color: white; font-family: Interstate, "Lucida Grande", Arial, sans-serif; overflow: hidden;
+}
+#np-overlay.active { display: flex; opacity: 1; }
+
+/* Background & Blur */
+#np-background {
+  position: absolute; top: -10%; left: -10%; width: 120%; height: 120%;
+  background-size: cover; background-position: center;
+  filter: blur(60px) brightness(0.4); z-index: 1; transition: background-image 0.5s ease;
+}
+
+/* Main Content Wrapper */
+#np-content {
+  position: relative; z-index: 2; display: flex; flex-direction: column;
+  width: 100%; height: 100%; padding: 40px 50px; box-sizing: border-box;
+}
+
+/* --- Idle State Logic --- */
+#np-topbar, #np-details, #np-controls, #np-queue-host {
+  transition: opacity 0.5s ease;
+}
+
+/* On idle, hide topbar, details, controls. Leave Background & Waveform visible */
+#np-overlay.idle #np-topbar,
+#np-overlay.idle #np-details,
+#np-overlay.idle #np-controls {
+  opacity: 0; pointer-events: none;
+}
+
+/* P0 FIX: Hide Queue panel on idle so it doesn't leave an invisible gap */
+#np-overlay.idle.show-queue #np-queue-host {
+  display: none !important;
+}
+
+/* Top Bar */
+#np-topbar { display: flex; justify-content: flex-end; margin-bottom: 20px; }
+#np-close {
+  background: rgba(0,0,0,0.3); border: 1px solid rgba(255,255,255,0.2); color: white;
+  font-size: 24px; width: 40px; height: 40px; border-radius: 50%; cursor: pointer; transition: background 0.2s;
+}
+#np-close:hover { background: rgba(0,0,0,0.6); }
+
+/* Center: Track Info */
+#np-center {
+  flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center;
+  gap: 20px; max-width: 1000px; margin: 0 auto; width: 100%; text-align: center;
+}
+#np-art {
+  width: 350px; height: 350px; border-radius: 8px; box-shadow: 0 20px 50px rgba(0,0,0,0.5);
+  background-size: cover; background-position: center; transition: background-image 0.5s ease;
+}
+#np-details { display: flex; flex-direction: column; gap: 8px; }
+#np-artist, #np-title { text-decoration: none; color: white; cursor: pointer; }
+#np-artist { font-size: 20px; opacity: 0.7; }
+#np-title { font-size: 36px; font-weight: bold; line-height: 1.2; }
+#np-artist:hover, #np-title:hover { text-decoration: underline; }
+
+/* Bottom: Waveform, Controls & Queue */
+#np-bottom {
+  display: flex; flex-direction: column; gap: 20px;
+  max-width: 1000px; margin: 0 auto; width: 100%; position: relative;
+}
+
+/* Live Waveform Host */
+#np-waveform-host { 
+  width: 100%; height: 140px; position: relative; 
+}
+/* Crucial: Hide all the native SoundCloud comment popups while inside our UI */
+#np-waveform-host .commentPopover,
+#np-waveform-host .commentPlaceholder,
+#np-waveform-host .waveformCommentsNode,
+#np-waveform-host .waveform__empty { display: none !important; }
+
+/* Flat Fallback Bar (For Feed/Library where Waveform doesn't exist) */
+#np-fallback-bg { width: 100%; height: 8px; background: rgba(255,255,255,0.2); border-radius: 4px; position: relative; overflow: hidden; display: none; }
+#np-fallback-fill { height: 100%; background: #ff5500; width: 0%; border-radius: 4px; }
+
+/* Native-Styled Controls */
+#np-controls { display: flex; justify-content: center; align-items: center; gap: 30px; }
+.np-btn {
+  background: none; border: none; color: white; cursor: pointer; opacity: 0.7; 
+  transition: opacity 0.2s, transform 0.1s; display: flex; align-items: center; justify-content: center;
+}
+.np-btn:hover { opacity: 1; transform: scale(1.1); }
+.np-btn svg { width: 24px; height: 24px; fill: currentColor; }
+#np-play svg { width: 40px; height: 40px; }
+
+/* P0: Embedded Queue Panel Host */
+#np-queue-host {
+  display: none; width: 100%; height: 250px; overflow-y: auto;
+  background: rgba(0,0,0,0.5); border-radius: 8px;
+}
+#np-overlay.show-queue #np-queue-host { display: block; }
+
+/* Override SoundCloud's inline queue styles when placed inside our host */
+#np-queue-host .queue {
+  position: relative !important; top: auto !important; bottom: auto !important;
+  transform: none !important; opacity: 1 !important; visibility: visible !important;
+  height: 100% !important; background: transparent !important; border: none !important;
+}
+#np-queue-host .queue__panel { background: transparent !important; color: white !important; }
+#np-queue-host .queue__title { color: white !important; }
+#np-queue-host .queueItemView__title a,
+#np-queue-host .queueItemView__username { color: white !important; }
+#np-queue-host .queueItemView:hover { background: rgba(255,255,255,0.1) !important; }
+#np-queue-host .queueItemView.m-active { background: rgba(255,85,0,0.2) !important; }
+
+/* Custom Scrollbar for Queue */
+#np-queue-host::-webkit-scrollbar { width: 8px; }
+#np-queue-host::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.3); border-radius: 4px; }
